@@ -1,0 +1,26 @@
+﻿@page "/privacy"
+@using Workdays.Service
+
+@inject IWorkdayService _workdayService
+
+<PageTitle>Privacy</PageTitle>
+
+<h1>Privacy</h1>
+<p>Delete all data from local browser storage</p>
+<button class="btn btn-danger" @onclick="Delete">Delete data</button>
+<p></p>
+
+@if (deleted)
+{
+    <p>All data deleted</p>
+}
+
+@code {
+    private bool deleted;
+
+    private async Task Delete()
+    {
+       await _workdayService.DeleteData();
+        deleted = true;
+    }
+}

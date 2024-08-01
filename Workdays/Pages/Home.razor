@@ -1,0 +1,60 @@
+﻿@page "/"
+@using Blazored.LocalStorage
+@using Workdays.Service
+@using Workdays.Model
+
+@inject IWorkdayService _workdayService;
+
+<PageTitle>Home</PageTitle>
+
+<h1>Workdays</h1>
+<br />
+<h3>Office percentage: @_workdayService.Percentage% </h3>
+<br />
+
+@if (_workdayService.Workdays != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Location</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dayOfWeek in _workdayService.Workdays)
+            {
+                <tr>
+                    <td>@dayOfWeek.Date.ToString("dd/MM/yyyy")</td>
+                    <td>@dayOfWeek.Day</td>
+                    <td>
+                        <select @bind="dayOfWeek.SelectedLocation" @bind:after="Update">
+                            @foreach (var location in Enum.GetValues(typeof(SelectedLocation)))
+                            {
+                                <option value="@location">@location</option>
+                            }
+                        </select>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<br />
+<br />
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await _workdayService.Populate();
+        _workdayService.UpdatePercentage();
+    }
+
+    private async Task Update()
+    {
+        _workdayService.UpdatePercentage();
+        await _workdayService.PersistData();
+    }
+}
